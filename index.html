@@ -14,7 +14,7 @@
     <h1>Sunucu Taraflı QR Kod Oluşturucu</h1>
     <input type="text" id="url-input" placeholder="URL'yi buraya girin" style="width: 80%; padding: 10px; font-size: 16px;">
     <button id="generate-btn">QR Kodunu Oluştur</button>
-    <div id="qrcode"><img id="qr-img" style="display: none;"></div>
+    <div id="qrcode"><img id="qr-img" style="display: none; max-width: 300px;"></div>
 
     <script>
         document.getElementById("generate-btn").addEventListener("click", async () => {
@@ -24,15 +24,17 @@
                 return;
             }
 
-            const response = await fetch("https://qr-backend.railway.app/generate", {
+            const response = await fetch("https://qr-backend.railway.app/generate", { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url })
             });
 
-            if (response.ok) {
+            const data = await response.json(); // JSON olarak çözümle
+
+            if (data.qrCode) {
                 const qrImg = document.getElementById("qr-img");
-                qrImg.src = URL.createObjectURL(await response.blob());
+                qrImg.src = data.qrCode; // Base64 resmini direkt göster
                 qrImg.style.display = "block";
             } else {
                 alert("QR kod oluşturulamadı!");
