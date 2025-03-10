@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Kod Oluşturucu</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #qrcode { margin-top: 20px; }
+        #generate-btn { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        #generate-btn:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Sunucu Taraflı QR Kod Oluşturucu</h1>
+    <input type="text" id="url-input" placeholder="URL'yi buraya girin" style="width: 80%; padding: 10px; font-size: 16px;">
+    <button id="generate-btn">QR Kodunu Oluştur</button>
+    <div id="qrcode"><img id="qr-img" style="display: none;"></div>
+
+    <script>
+        document.getElementById("generate-btn").addEventListener("click", async () => {
+            const url = document.getElementById("url-input").value;
+            if (!url) {
+                alert("Lütfen geçerli bir URL girin.");
+                return;
+            }
+
+            const response = await fetch("http://localhost:3000/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url })
+            });
+
+            if (response.ok) {
+                const qrImg = document.getElementById("qr-img");
+                qrImg.src = URL.createObjectURL(await response.blob());
+                qrImg.style.display = "block";
+            } else {
+                alert("QR kod oluşturulamadı!");
+            }
+        });
+    </script>
+</body>
+</html>
